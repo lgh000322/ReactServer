@@ -3,6 +3,8 @@ package org.zerock.mallapi.util;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.coobird.thumbnailator.Thumbnailator;
+import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -49,8 +51,23 @@ public class CustomFileUtil {
             Path savePath = Paths.get(uploadPath, savedName);
 
             try {
-                Files.copy(file.getInputStream(), savePath);
+                Files.copy(file.getInputStream(), savePath); // 원본 파일 업로드
+
+                String contentType = file.getContentType();
+                log.info("contentType={}", contentType);
+
+                if (contentType != null && contentType.startsWith("image")) {
+                    Path thumbnailPath = Paths.get(uploadPath, "s_"+savedName);
+                    Thumbnails.of(savePath.toFile())
+                            .size(200, 200)
+                            .toFile(thumbnailPath.toFile());
+                }
+
                 uploadNames.add(savedName);
+
+
+
+
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
