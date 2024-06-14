@@ -4,11 +4,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.test.annotation.Commit;
 import org.springframework.transaction.annotation.Transactional;
 import org.zerock.mallapi.domain.Product;
+import org.zerock.mallapi.dto.PageRequestDto;
 
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -24,16 +30,20 @@ public class ProductRepositoryTest {
     @Test
     @Transactional
     public void testInsert() throws Exception{
-        Product product = Product.builder()
-                .pname("Test")
-                .pdesc("Test Desc")
-                .price(1000)
-                .build();
 
-        product.addImageString(UUID.randomUUID() + "_" + "IMAGE1.JPG");
-        product.addImageString(UUID.randomUUID() + "_" + "IMAGE2.JPG");
+        for (int i = 0; i < 10; i++) {
 
-        productRepository.save(product);
+            Product product = Product.builder()
+                    .pname("Test"+i)
+                    .pdesc("Test Desc"+i)
+                    .price(1000+i)
+                    .build();
+
+            product.addImageString(UUID.randomUUID() + "_" + "IMAGE1.JPG"+i);
+            product.addImageString(UUID.randomUUID() + "_" + "IMAGE2.JPG"+i);
+
+            productRepository.save(product);
+        }
     }
 
     @Test
@@ -76,6 +86,22 @@ public class ProductRepositoryTest {
 
         productRepository.save(result);
     }
+    
+    @Test
+    public void testList() throws Exception{
+        Pageable pageable = PageRequest.of(0, 10, Sort.by("pno").descending());
 
+        Page<Object[]> result = productRepository.selectList(pageable);
+
+        result.getContent().forEach(arr -> log.info(Arrays.toString(arr)));
+    }   
+
+    
+    @Test
+    public void testSearch() throws Exception{
+        PageRequestDto pageRequestDto = PageRequestDto.builder().build();
+
+        productRepository.searchList(pageRequestDto);
+    }   
 
 }
