@@ -70,9 +70,6 @@ public class CustomFileUtil {
 
                 uploadNames.add(savedName);
 
-
-
-
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
