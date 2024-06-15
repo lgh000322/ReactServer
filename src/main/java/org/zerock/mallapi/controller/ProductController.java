@@ -46,7 +46,7 @@ public class ProductController {
     }
 
 
-    @PreAuthorize("hasAnyRole('ROLE_USER','ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @GetMapping("/list")
     public PageResponseDto<ProductDto> list(PageRequestDto pageRequestDto) {
         return productService.getList(pageRequestDto);

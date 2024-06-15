@@ -19,6 +19,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.zerock.mallapi.security.filter.JWTCheckFilter;
 import org.zerock.mallapi.security.handler.APILoginFailHandler;
 import org.zerock.mallapi.security.handler.APILoginSuccessHandler;
+import org.zerock.mallapi.security.handler.CustomAccessDeniedHandler;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -58,6 +59,10 @@ public class CustomSecurityConfig {
 
         http.csrf(httpSecurityCsrfConfigurer -> {
             httpSecurityCsrfConfigurer.disable();
+        });
+
+        http.exceptionHandling(httpSecurityExceptionHandlingConfigurer -> {
+            httpSecurityExceptionHandlingConfigurer.accessDeniedHandler(new CustomAccessDeniedHandler());
         });
 
         http.formLogin(config -> {
