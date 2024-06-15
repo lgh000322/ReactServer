@@ -44,7 +44,7 @@ public class CustomFileUtil {
     }
     public List<String> saveFiles(List<MultipartFile> files) throws RuntimeException {
 
-        if (files == null || files.size() == 0) {
+        if (files == null || files.isEmpty()) {
             return null;
         }
 
