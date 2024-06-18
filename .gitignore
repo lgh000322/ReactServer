@@ -6,6 +6,7 @@ src/main/generated
 !**/src/main/**/build/
 !**/src/test/**/build/
 upload
+**/application.yml
 
 ### STS ###
 .apt_generated
@@ -18,7 +19,6 @@ upload
 bin/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
-src/main/resources/application.yml
 
 ### IntelliJ IDEA ###
 .idea
