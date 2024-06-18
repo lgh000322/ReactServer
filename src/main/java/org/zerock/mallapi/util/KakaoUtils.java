@@ -18,7 +18,7 @@ public class KakaoUtils {
     @Value("${kakao.response.type}")
     private String responseType;
 
-    //첫번째 인가코드를 가져오는 메소드
+    //인가 코드 url
     public String getKakaoURI() {
         return url + "?client_id=" + clientId + "&redirect_uri=" + redirectURI + "&response_type=" + responseType;
     }
