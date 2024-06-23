@@ -18,7 +18,6 @@ import java.util.Map;
 @RequestMapping("/member/kakao")
 public class KakaoLoginController {
     private final KakaoUtils kakaoUtils;
-
     /**
      * 사용자가 카카오로 로그인하기 버튼을 눌렀을 때
      * @return 카카오 로그인 페이지 리턴, 로그인 후 동의 페이지 출력
@@ -31,11 +30,14 @@ public class KakaoLoginController {
 
     /**
      * 사용자가 카카오 로그인 후 동의 페이지에서 동의 버튼을 눌렀을 때,
-     * @param authorCode 카카오 인가 코드
+     * @param authorCode 카카오 인가 코드, accessToken
      * @return
      */
     @GetMapping
     public Map<String, String> kakaoRedirect(@RequestParam(name = "code") String authorCode) {
-        return Map.of("SUCCESS", "success", "AuthorCode", authorCode);
+        String kakaoAccessToken = kakaoUtils.getKakaoAccessToken(authorCode);
+        return Map.of("SUCCESS", "success",
+                "AuthorCode", authorCode,
+                "kakaoAccessToken", kakaoAccessToken);
     }
 }
