@@ -30,8 +30,8 @@ public class KakaoLoginController {
 
     /**
      * 사용자가 카카오 로그인 후 동의 페이지에서 동의 버튼을 눌렀을 때,
-     * @param authorCode 카카오 인가 코드, accessToken
-     * @return
+     * @param authorCode 카카오 인가 코드
+     * @return 인가코드, 카카오의 accessToken을 출력
      */
     @GetMapping
     public Map<String, String> kakaoRedirect(@RequestParam(name = "code") String authorCode) {
