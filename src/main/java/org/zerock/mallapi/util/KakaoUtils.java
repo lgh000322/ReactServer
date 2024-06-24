@@ -8,7 +8,9 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 @Component
@@ -67,20 +69,35 @@ public class KakaoUtils {
         }
     }
 
-    //카카오 유저 정보 가져오기(id)
-    public Long getKakaoUserInfo(String accessToken) {
-        Long id = webClient2.get()
-                .header("Authorization", "Bearer " + accessToken)
-                .header("Content-type", "application/x-www-form-urlencoded;charset=utf-8")
-                .retrieve()
-                .bodyToMono(Map.class)
-                .map(response -> (Long) response.get("id"))
-                .block();
+    //카카오 유저 정보 가져오기(nickname)
+    public String getKakaoUserInfo(String accessToken) {
+        try {
+            Map properties = webClient2.get()
+                    .header("Authorization", "Bearer " + accessToken)
+                    .header("Content-type", "application/x-www-form-urlencoded;charset=utf-8")
+                    .retrieve()
+                    .bodyToMono(LinkedHashMap.class)
+                    .map(response -> (Map) response.get("properties"))
+                    .block();
 
-        if (id != null && id != 0) {
-            return id;
-        } else {
-            throw new CustomKakaoException("카카오 유저정보를 가져오는데 오류가 발생했습니다.");
+            if (properties == null) {
+                throw new CustomKakaoException("Failed to retrieve user properties.");
+            }
+
+            String nickname = (String) properties.get("nickname");
+
+            if (nickname == null || nickname.isEmpty()) {
+                throw new CustomKakaoException("Nickname is not available.");
+            }
+
+            return nickname;
+        } catch (WebClientResponseException e) {
+            log.error("Error fetching Kakao user info: {}", e.getMessage());
+            if (e.getStatusCode().value() == 401) {
+                throw new CustomKakaoException("Unauthorized: Invalid or expired access token.");
+            } else {
+                throw new CustomKakaoException("Error fetching Kakao user info.");
+            }
         }
     }
 }

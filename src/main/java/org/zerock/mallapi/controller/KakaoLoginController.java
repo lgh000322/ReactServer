@@ -7,6 +7,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.view.RedirectView;
+import org.zerock.mallapi.dto.MemberDto;
+import org.zerock.mallapi.service.MemberService;
+import org.zerock.mallapi.util.JWTUtil;
 import org.zerock.mallapi.util.KakaoUtils;
 
 import java.util.Map;
@@ -17,29 +20,35 @@ import java.util.Map;
 @Slf4j
 @RequestMapping("/member/kakao")
 public class KakaoLoginController {
-    private final KakaoUtils kakaoUtils;
+    private final MemberService memberService;
+
     /**
      * 사용자가 카카오로 로그인하기 버튼을 눌렀을 때
      * @return 카카오 로그인 페이지 리턴, 로그인 후 동의 페이지 출력
      */
     @GetMapping("/authentication")
     public RedirectView kakaoLoginView() {
-        String kakaoURI = kakaoUtils.getKakaoURI();
-        return new RedirectView(kakaoURI);
+        return new RedirectView(memberService.getKakaoURI());
     }
 
     /**
      * 사용자가 카카오 로그인 후 동의 페이지에서 동의 버튼을 눌렀을 때,
      * @param authorCode 카카오 인가 코드
-     * @return 인가코드, 카카오의 accessToken을 출력
+     * @return jwt accessToken, refreshToken 반환
      */
     @GetMapping
     public Map<String, Object> kakaoRedirect(@RequestParam(name = "code") String authorCode) {
-        String kakaoAccessToken = kakaoUtils.getKakaoAccessToken(authorCode);
-        Long kakaoUserInfo = kakaoUtils.getKakaoUserInfo(kakaoAccessToken);
-        return Map.of("SUCCESS", "success",
-                "AuthorCode", authorCode,
-                "kakaoAccessToken", kakaoAccessToken,
-                "kakaoUserInfo", kakaoUserInfo);
+        String kakaoAccessToken = memberService.getAccessToken(authorCode);
+        MemberDto memberDto = memberService.getKakaoMember(kakaoAccessToken);
+
+        Map<String, Object> claims = memberDto.getClaims();
+
+        String jwtAccessToken = JWTUtil.generateToken(claims, 10);
+        String jwtRefreshToken = JWTUtil.generateToken(claims, 24 * 60);
+
+        claims.put("accessToken", jwtAccessToken);
+        claims.put("refreshToken", jwtRefreshToken);
+
+        return claims;
     }
 }
