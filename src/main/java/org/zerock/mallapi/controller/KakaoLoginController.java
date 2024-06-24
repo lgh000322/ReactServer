@@ -34,10 +34,12 @@ public class KakaoLoginController {
      * @return 인가코드, 카카오의 accessToken을 출력
      */
     @GetMapping
-    public Map<String, String> kakaoRedirect(@RequestParam(name = "code") String authorCode) {
+    public Map<String, Object> kakaoRedirect(@RequestParam(name = "code") String authorCode) {
         String kakaoAccessToken = kakaoUtils.getKakaoAccessToken(authorCode);
+        Long kakaoUserInfo = kakaoUtils.getKakaoUserInfo(kakaoAccessToken);
         return Map.of("SUCCESS", "success",
                 "AuthorCode", authorCode,
-                "kakaoAccessToken", kakaoAccessToken);
+                "kakaoAccessToken", kakaoAccessToken,
+                "kakaoUserInfo", kakaoUserInfo);
     }
 }
