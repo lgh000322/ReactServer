@@ -10,7 +10,6 @@ import org.springframework.web.servlet.view.RedirectView;
 import org.zerock.mallapi.dto.MemberDto;
 import org.zerock.mallapi.service.MemberService;
 import org.zerock.mallapi.util.JWTUtil;
-import org.zerock.mallapi.util.KakaoUtils;
 
 import java.util.Map;
 
